@@ -11,10 +11,12 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
     private int m_Points;
+    
     
     private bool m_GameOver = false;
 
@@ -24,7 +26,14 @@ public class MainManager : MonoBehaviour
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
-        
+
+        //We initialize the ScoreText
+        ScoreText.text = GameManager.Instance.playerName + $" Score : 0";
+
+        //We initalize the best score text
+        BestScoreText.text = $"Best Score : {GameManager.Instance.highestPlayer} : {GameManager.Instance.highestScore}";
+
+
         int[] pointCountArray = new [] {1,1,2,2,5,5};
         for (int i = 0; i < LineCount; ++i)
         {
@@ -60,17 +69,35 @@ public class MainManager : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
+
+
+        
     }
 
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = $" {GameManager.Instance.playerName} Score : {m_Points}";
+
+        print(GameManager.Instance.highestScore);
+
+
+        //we check if the highest score is beat and we replace if it did
+        if(m_Points > GameManager.Instance.highestScore)
+        {
+            GameManager.Instance.highestScore = m_Points;
+            GameManager.Instance.highestPlayer = GameManager.Instance.playerName;
+            BestScoreText.text = $"Best Score : {GameManager.Instance.playerName} : {m_Points}";
+
+        }
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        GameManager.Instance.SaveScorePlayer();
+
     }
 }
